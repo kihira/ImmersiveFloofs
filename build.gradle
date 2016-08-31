@@ -48,7 +48,7 @@ version = "${project.mcVersion}-${project.massive}.${project.major}.${project.mi
 dependencies {
     deployerJars "org.apache.maven.wagon:wagon-ssh:2.2"
 
-    deobfCompile "uk.kihira.tails:Tails:1.10.2-1.8.1"
+    deobfCompile "uk.kihira.tails:Tails:1.10.2-1.8.2"
 }
 
 minecraft {
