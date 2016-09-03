@@ -27,18 +27,18 @@ public class ImmersiveFloofs {
     private Configuration config;
     private boolean randomBullet = false;
     private boolean shooterBullet = true;
-    private boolean craftedBullet = true;
+    //private boolean craftedBullet = true;
     private boolean milkResets = true;
 
     @GameRegistry.ObjectHolder(value = "immersiveengineering:bullet")
-    public static final Item ieItemBullet = Items.APPLE;
+    public static final Item IE_ITEM_BULLET = Items.APPLE;
 
     @Mod.EventHandler
     public void onPreInit(FMLPreInitializationEvent e) {
         /* Load config */
         config = new Configuration(e.getSuggestedConfigurationFile());
         shooterBullet = config.getBoolean("Shooter Floof Bullet", Configuration.CATEGORY_GENERAL, true, "This bullet will apply the shooters parts data to the target");
-        craftedBullet = config.getBoolean("Crafted Floof Bullet", Configuration.CATEGORY_GENERAL, true, "This bullet will store the crafters parts data on the bullet");
+        //craftedBullet = config.getBoolean("Crafted Floof Bullet", Configuration.CATEGORY_GENERAL, true, "This bullet will store the crafters parts data on the bullet");
         randomBullet = config.getBoolean("Random Floof Bullet", Configuration.CATEGORY_GENERAL, false, "This bullet will apply random parts from a list");
         milkResets = config.getBoolean("Milk Resets", Configuration.CATEGORY_GENERAL, true, "Whether drinking milk resets the 'effect'");
 
@@ -52,15 +52,15 @@ public class ImmersiveFloofs {
                 return projectile;
             }
         });
-        if (craftedBullet) BulletHandler.registerBullet("floof_crafted", new FloofBullet("floof_crafted") {
-            @Override
-            public Entity getProjectile(EntityPlayer shooter, ItemStack cartridge, Entity projectile, boolean charged) {
-                if (cartridge.hasTagCompound() && cartridge.getTagCompound().hasKey("immersivefloofs")) {
-                    projectile.getEntityData().setString("immersivefloofs", cartridge.getTagCompound().getString("immersivefloofs"));
-                }
-                return projectile;
-            }
-        });
+//        if (craftedBullet) BulletHandler.registerBullet("floof_crafted", new FloofBullet("floof_crafted") {
+//            @Override
+//            public Entity getProjectile(EntityPlayer shooter, ItemStack cartridge, Entity projectile, boolean charged) {
+//                if (cartridge.hasTagCompound() && cartridge.getTagCompound().hasKey("immersivefloofs")) {
+//                    projectile.getEntityData().setString("immersivefloofs", cartridge.getTagCompound().getString("immersivefloofs"));
+//                }
+//                return projectile;
+//            }
+//        });
         if (randomBullet) BulletHandler.registerBullet("floof_random", new FloofBullet("floof_random")); // todo
 
         MinecraftForge.EVENT_BUS.register(this);
@@ -68,24 +68,24 @@ public class ImmersiveFloofs {
 
     @Mod.EventHandler
     public void onInit(FMLInitializationEvent e) {
-        if (ieItemBullet == null || ieItemBullet == Items.APPLE) throw new IllegalStateException("Unable to load IE bullet item!");
+        if (IE_ITEM_BULLET == null || IE_ITEM_BULLET == Items.APPLE) throw new IllegalStateException("Unable to load IE bullet item!");
         /* Register recipes */
         // todo proper recipes
         ItemStack output; // Metadata must be 2 or above but doesn't seem to really matter
         if (shooterBullet) {
-            output = new ItemStack(ieItemBullet, 1, 2);
+            output = new ItemStack(IE_ITEM_BULLET, 1, 2);
             output.setTagCompound(new NBTTagCompound() {{setString("bullet", "floof_shooter");}});
-            BlueprintCraftingRecipe.addRecipe("specialBullet", output, ieItemBullet, Items.LEATHER);
+            BlueprintCraftingRecipe.addRecipe("specialBullet", output, IE_ITEM_BULLET, Items.LEATHER);
         }
-        if (craftedBullet) {
-            output = new ItemStack(ieItemBullet, 1, 2);
-            output.setTagCompound(new NBTTagCompound() {{setString("bullet", "floof_crafted");}});
-            BlueprintCraftingRecipe.addRecipe("specialBullet", output, ieItemBullet, Items.LEATHER, Items.LEATHER);
-        }
+//        if (craftedBullet) {
+//            output = new ItemStack(IE_ITEM_BULLET, 1, 2);
+//            output.setTagCompound(new NBTTagCompound() {{setString("bullet", "floof_crafted");}});
+//            BlueprintCraftingRecipe.addRecipe("specialBullet", output, IE_ITEM_BULLET, Items.LEATHER, Items.LEATHER);
+//        }
         if (randomBullet) {
-            output = new ItemStack(ieItemBullet, 1, 2);
+            output = new ItemStack(IE_ITEM_BULLET, 1, 2);
             output.setTagCompound(new NBTTagCompound() {{setString("bullet", "floof_random");}});
-            BlueprintCraftingRecipe.addRecipe("specialBullet", output, ieItemBullet, Items.LEATHER, Items.LEATHER, Items.LEATHER);
+            BlueprintCraftingRecipe.addRecipe("specialBullet", output, IE_ITEM_BULLET, Items.LEATHER, Items.LEATHER, Items.LEATHER);
         }
     }
 
