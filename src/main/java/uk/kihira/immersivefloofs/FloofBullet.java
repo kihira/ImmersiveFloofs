@@ -19,7 +19,11 @@ import uk.kihira.tails.common.network.PlayerDataMessage;
 
 public class FloofBullet implements BulletHandler.IBullet {
 
-    private static final ResourceLocation[] texture = new ResourceLocation[]{new ResourceLocation(ImmersiveFloofs.MOD_ID, "bullet_floof")};
+    private final ResourceLocation[] texture;
+
+    public FloofBullet(String name) {
+        texture = new ResourceLocation[]{new ResourceLocation(ImmersiveFloofs.MOD_ID, name)};
+    }
 
     @Override
     public Entity getProjectile(EntityPlayer shooter, ItemStack cartridge, Entity projectile, boolean charged) {

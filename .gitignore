@@ -2,6 +2,7 @@
 /.gradle
 /build
 /eclipse
+/libs
 
 ##ForgeGradle
 /run
@@ -20,5 +21,3 @@
 /bin
 .idea/
 classes/
-
-/libs
