@@ -4,6 +4,7 @@ import blusunrize.immersiveengineering.api.crafting.BlueprintCraftingRecipe;
 import blusunrize.immersiveengineering.api.tool.BulletHandler;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemBucketMilk;
@@ -75,7 +76,7 @@ public class ImmersiveFloofs {
         if (shooterBullet) {
             output = new ItemStack(IE_ITEM_BULLET, 1, 2);
             output.setTagCompound(new NBTTagCompound() {{setString("bullet", "floof_shooter");}});
-            BlueprintCraftingRecipe.addRecipe("specialBullet", output, IE_ITEM_BULLET, Items.LEATHER);
+            BlueprintCraftingRecipe.addRecipe("specialBullet", output, IE_ITEM_BULLET, Items.GUNPOWDER, Blocks.WOOL);
         }
 //        if (craftedBullet) {
 //            output = new ItemStack(IE_ITEM_BULLET, 1, 2);
@@ -85,7 +86,7 @@ public class ImmersiveFloofs {
         if (randomBullet) {
             output = new ItemStack(IE_ITEM_BULLET, 1, 2);
             output.setTagCompound(new NBTTagCompound() {{setString("bullet", "floof_random");}});
-            BlueprintCraftingRecipe.addRecipe("specialBullet", output, IE_ITEM_BULLET, Items.LEATHER, Items.LEATHER, Items.LEATHER);
+            BlueprintCraftingRecipe.addRecipe("specialBullet", output, IE_ITEM_BULLET, Items.GUNPOWDER, Items.LEATHER);
         }
     }
 
