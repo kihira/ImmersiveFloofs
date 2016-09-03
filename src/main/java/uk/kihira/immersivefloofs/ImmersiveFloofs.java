@@ -13,7 +13,7 @@ import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import uk.kihira.tails.common.Tails;
 
-@Mod(modid = ImmersiveFloofs.MOD_ID, name = "Immersive Floofs", version = "1.0.0")
+@Mod(modid = ImmersiveFloofs.MOD_ID, name = "Immersive Floofs", version = "1.0.0", dependencies = "required-after:immersiveengineering;required-after:tails@[1.9,)")
 public class ImmersiveFloofs {
     public static final String MOD_ID = "immersivefloofs";
 
