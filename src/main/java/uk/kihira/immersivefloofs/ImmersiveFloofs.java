@@ -2,6 +2,8 @@ package uk.kihira.immersivefloofs;
 
 import blusunrize.immersiveengineering.api.crafting.BlueprintCraftingRecipe;
 import blusunrize.immersiveengineering.api.tool.BulletHandler;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonParser;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
@@ -18,7 +20,10 @@ import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.registry.GameRegistry;
+import org.apache.commons.io.IOUtils;
 import uk.kihira.tails.common.Tails;
+
+import java.io.IOException;
 
 @Mod(modid = ImmersiveFloofs.MOD_ID, name = "Immersive Floofs", version = "1.0.0", dependencies = "required-after:immersiveengineering;required-after:tails@[1.9,)")
 public class ImmersiveFloofs {
@@ -39,9 +44,10 @@ public class ImmersiveFloofs {
         /* Load config */
         config = new Configuration(e.getSuggestedConfigurationFile());
         shooterBullet = config.getBoolean("Shooter Floof Bullet", Configuration.CATEGORY_GENERAL, true, "This bullet will apply the shooters parts data to the target");
-        //craftedBullet = config.getBoolean("Crafted Floof Bullet", Configuration.CATEGORY_GENERAL, true, "This bullet will store the crafters parts data on the bullet");
         randomBullet = config.getBoolean("Random Floof Bullet", Configuration.CATEGORY_GENERAL, false, "This bullet will apply random parts from a list");
         milkResets = config.getBoolean("Milk Resets", Configuration.CATEGORY_GENERAL, true, "Whether drinking milk resets the 'effect'");
+
+        randomBullet = true;
 
         /* Register bullets **/
         if (shooterBullet) BulletHandler.registerBullet("floof_shooter", new FloofBullet("floof_shooter") {
@@ -53,16 +59,25 @@ public class ImmersiveFloofs {
                 return projectile;
             }
         });
-//        if (craftedBullet) BulletHandler.registerBullet("floof_crafted", new FloofBullet("floof_crafted") {
-//            @Override
-//            public Entity getProjectile(EntityPlayer shooter, ItemStack cartridge, Entity projectile, boolean charged) {
-//                if (cartridge.hasTagCompound() && cartridge.getTagCompound().hasKey("immersivefloofs")) {
-//                    projectile.getEntityData().setString("immersivefloofs", cartridge.getTagCompound().getString("immersivefloofs"));
-//                }
-//                return projectile;
-//            }
-//        });
-        if (randomBullet) BulletHandler.registerBullet("floof_random", new FloofBullet("floof_random")); // todo
+        if (randomBullet) {
+            // Blargh code but only way to not get the getProjectile stuck inside a try/catch loop and not load on corrupted data
+            JsonArray parts = null;
+            try {
+                parts = new JsonParser().parse(IOUtils.toString(ImmersiveFloofs.class.getResourceAsStream("/assets/immersivefloofs/random_tails.txt"))).getAsJsonArray();
+            } catch (IOException e1) {
+                e1.printStackTrace();
+            }
+            if (parts == null) throw new IllegalStateException("Failed to load random tail data for random bullet!");
+
+            final JsonArray finalParts = parts;
+            BulletHandler.registerBullet("floof_random", new FloofBullet("floof_random") {
+                @Override
+                public Entity getProjectile(EntityPlayer shooter, ItemStack cartridge, Entity projectile, boolean charged) {
+                    projectile.getEntityData().setString("immersivefloofs", finalParts.get(shooter.getRNG().nextInt(finalParts.size())).toString());
+                    return projectile;
+                }
+            });
+        }
 
         MinecraftForge.EVENT_BUS.register(this);
     }
@@ -71,18 +86,12 @@ public class ImmersiveFloofs {
     public void onInit(FMLInitializationEvent e) {
         if (IE_ITEM_BULLET == null || IE_ITEM_BULLET == Items.APPLE) throw new IllegalStateException("Unable to load IE bullet item!");
         /* Register recipes */
-        // todo proper recipes
         ItemStack output; // Metadata must be 2 or above but doesn't seem to really matter
         if (shooterBullet) {
             output = new ItemStack(IE_ITEM_BULLET, 1, 2);
             output.setTagCompound(new NBTTagCompound() {{setString("bullet", "floof_shooter");}});
             BlueprintCraftingRecipe.addRecipe("specialBullet", output, IE_ITEM_BULLET, Items.GUNPOWDER, Blocks.WOOL);
         }
-//        if (craftedBullet) {
-//            output = new ItemStack(IE_ITEM_BULLET, 1, 2);
-//            output.setTagCompound(new NBTTagCompound() {{setString("bullet", "floof_crafted");}});
-//            BlueprintCraftingRecipe.addRecipe("specialBullet", output, IE_ITEM_BULLET, Items.LEATHER, Items.LEATHER);
-//        }
         if (randomBullet) {
             output = new ItemStack(IE_ITEM_BULLET, 1, 2);
             output.setTagCompound(new NBTTagCompound() {{setString("bullet", "floof_random");}});
