@@ -4,6 +4,7 @@ import blusunrize.immersiveengineering.api.crafting.BlueprintCraftingRecipe;
 import blusunrize.immersiveengineering.api.tool.BulletHandler;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonParser;
+import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
@@ -12,6 +13,7 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemBucketMilk;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.config.Configuration;
 import net.minecraftforge.event.entity.living.LivingEntityUseItemEvent;
@@ -23,6 +25,7 @@ import net.minecraftforge.fml.common.registry.GameRegistry;
 import org.apache.commons.io.IOUtils;
 import uk.kihira.tails.common.Tails;
 
+import java.awt.*;
 import java.io.IOException;
 
 @Mod(modid = ImmersiveFloofs.MOD_ID, name = "Immersive Floofs", version = "1.0.0", dependencies = "required-after:immersiveengineering;required-after:tails@[1.9,)")
@@ -50,7 +53,7 @@ public class ImmersiveFloofs {
         randomBullet = true;
 
         /* Register bullets **/
-        if (shooterBullet) BulletHandler.registerBullet("floof_shooter", new FloofBullet("floof_shooter") {
+        if (shooterBullet) BulletHandler.registerBullet("floof_shooter", new FloofBullet(new ResourceLocation[]{new ResourceLocation(ImmersiveFloofs.MOD_ID, "floof_shooter")}) {
             @Override
             public Entity getProjectile(EntityPlayer shooter, ItemStack cartridge, Entity projectile, boolean charged) {
                 if (Tails.proxy.hasPartsData(shooter.getPersistentID())) {
@@ -70,11 +73,19 @@ public class ImmersiveFloofs {
             if (parts == null) throw new IllegalStateException("Failed to load random tail data for random bullet!");
 
             final JsonArray finalParts = parts;
-            BulletHandler.registerBullet("floof_random", new FloofBullet("floof_random") {
+            BulletHandler.registerBullet("floof_random", new FloofBullet(new ResourceLocation[]{new ResourceLocation(ImmersiveFloofs.MOD_ID, "floof_random0"), new ResourceLocation(ImmersiveFloofs.MOD_ID, "floof_random1")}) {
                 @Override
                 public Entity getProjectile(EntityPlayer shooter, ItemStack cartridge, Entity projectile, boolean charged) {
                     projectile.getEntityData().setString("immersivefloofs", finalParts.get(shooter.getRNG().nextInt(finalParts.size())).toString());
                     return projectile;
+                }
+
+                @Override
+                public int getColour(ItemStack stack, int layer) {
+                    if (layer == 1) {
+                        return Color.getHSBColor(((Minecraft.getMinecraft().theWorld.getTotalWorldTime() + Minecraft.getMinecraft().getRenderPartialTicks()) % 360f) / 360f, 1f, 1f).getRGB();
+                    }
+                    return 0xffffffff;
                 }
             });
         }

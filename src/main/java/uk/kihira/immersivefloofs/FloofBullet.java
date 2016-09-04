@@ -19,10 +19,10 @@ import uk.kihira.tails.common.network.PlayerDataMessage;
 
 public class FloofBullet implements BulletHandler.IBullet {
 
-    private final ResourceLocation[] texture;
+    private final ResourceLocation[] textures;
 
-    public FloofBullet(String name) {
-        texture = new ResourceLocation[]{new ResourceLocation(ImmersiveFloofs.MOD_ID, name)};
+    public FloofBullet(ResourceLocation[] textures) {
+        this.textures = textures;
     }
 
     @Override
@@ -51,7 +51,7 @@ public class FloofBullet implements BulletHandler.IBullet {
 
     @Override
     public ResourceLocation[] getTextures() {
-        return texture;
+        return textures;
     }
 
     @Override
