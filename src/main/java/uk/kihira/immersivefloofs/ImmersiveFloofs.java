@@ -17,18 +17,23 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.config.Configuration;
 import net.minecraftforge.event.entity.living.LivingEntityUseItemEvent;
+import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.registry.GameRegistry;
+import net.minecraftforge.fml.relauncher.Side;
 import org.apache.commons.io.IOUtils;
+import uk.kihira.tails.common.PartsData;
 import uk.kihira.tails.common.Tails;
+import uk.kihira.tails.common.network.PlayerDataMessage;
 
 import java.awt.*;
 import java.io.IOException;
+import java.util.UUID;
 
-@Mod(modid = ImmersiveFloofs.MOD_ID, name = "Immersive Floofs", version = "1.0.0", dependencies = "required-after:immersiveengineering;required-after:tails@[1.9,)")
+@Mod(modid = ImmersiveFloofs.MOD_ID, name = "Immersive Floofs", version = "1.0.0", dependencies = "required-after:immersiveengineering;required-after:tails")
 public class ImmersiveFloofs {
     public static final String MOD_ID = "immersivefloofs";
 
@@ -112,8 +117,19 @@ public class ImmersiveFloofs {
 
     @SubscribeEvent
     public void onMilkDrink(LivingEntityUseItemEvent.Finish e) {
-        if (milkResets && e.getItem().getItem() instanceof ItemBucketMilk) {
-            // todo reset
+        if (milkResets && e.getItem().getItem() instanceof ItemBucketMilk && FloofBullet.oldPartCache.containsKey(e.getEntityLiving().getPersistentID())) {
+            UUID uuid = e.getEntityLiving().getPersistentID();
+            PartsData oldParts = FloofBullet.oldPartCache.get(uuid);
+            boolean remove = oldParts == null;
+            if (remove) {
+                Tails.proxy.removePartsData(uuid);
+            }
+            else {
+                Tails.proxy.addPartsData(uuid, oldParts);
+            }
+            if (FMLCommonHandler.instance().getSide() == Side.SERVER) {
+                Tails.networkWrapper.sendToAll(new PlayerDataMessage(uuid, oldParts, remove));
+            }
         }
     }
 }

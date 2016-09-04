@@ -17,7 +17,11 @@ import uk.kihira.tails.common.PartsData;
 import uk.kihira.tails.common.Tails;
 import uk.kihira.tails.common.network.PlayerDataMessage;
 
+import java.util.HashMap;
+import java.util.UUID;
+
 public class FloofBullet implements BulletHandler.IBullet {
+    public static final HashMap<UUID, PartsData> oldPartCache = new HashMap<>();
 
     private final ResourceLocation[] textures;
 
@@ -33,10 +37,16 @@ public class FloofBullet implements BulletHandler.IBullet {
     @Override
     public void onHitTarget(World world, RayTraceResult target, EntityLivingBase shooter, Entity projectile, boolean headshot) {
         if (projectile.getEntityData().hasKey("immersivefloofs") && target.typeOfHit == RayTraceResult.Type.ENTITY && target.entityHit instanceof EntityPlayer) {
+            UUID targetUUID = target.entityHit.getPersistentID();
+            // Store old data for restoration
+            if (!oldPartCache.containsKey(targetUUID)) {
+                oldPartCache.put(targetUUID, Tails.proxy.getPartsData(targetUUID));
+            }
+
             PartsData data = Tails.gson.fromJson(projectile.getEntityData().getString("immersivefloofs"), PartsData.class);
-            Tails.proxy.addPartsData(target.entityHit.getPersistentID(), data);
+            Tails.proxy.addPartsData(targetUUID, data);
             if (FMLCommonHandler.instance().getSide() == Side.SERVER) {
-                Tails.networkWrapper.sendToAll(new PlayerDataMessage(target.entityHit.getPersistentID(), data, false));
+                Tails.networkWrapper.sendToAll(new PlayerDataMessage(targetUUID, data, false));
             }
 
             FMLCommonHandler.instance().getMinecraftServerInstance().addChatMessage(new TextComponentTranslation("chat.immersivefloofs.floof", target.entityHit.getName(), shooter.getName()));
