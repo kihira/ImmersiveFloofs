@@ -49,7 +49,7 @@ public class FloofBullet implements BulletHandler.IBullet {
                 Tails.networkWrapper.sendToAll(new PlayerDataMessage(targetUUID, data, false));
             }
 
-            FMLCommonHandler.instance().getMinecraftServerInstance().getPlayerList().sendChatMsg(new TextComponentTranslation("chat.immersivefloofs.floofed", target.entityHit.getName(), shooter.getName()));
+            FMLCommonHandler.instance().getMinecraftServerInstance().getPlayerList().sendMessage(new TextComponentTranslation("chat.immersivefloofs.floofed", target.entityHit.getName(), shooter.getName()));
             world.playSound(null, target.entityHit.posX, target.entityHit.posY, target.entityHit.posZ, SoundEvents.BLOCK_CLOTH_PLACE, SoundCategory.PLAYERS, 0.3f, 0.6f);
         }
     }

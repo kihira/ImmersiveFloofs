@@ -8,15 +8,15 @@ buildscript {
         }
     }
     dependencies {
-        classpath 'net.minecraftforge.gradle:ForgeGradle:2.2-SNAPSHOT'
+        classpath 'net.minecraftforge.gradle:ForgeGradle:2.3-SNAPSHOT'
     }
 }
 
 repositories {
     mavenCentral()
-    maven {
-        name = 'Kihira Maven'
-        url = 'http://maven.foxes.rocks'
+    ivy {
+        name 'asie dependency mirror'
+        artifactPattern "http://asie.pl/javadeps/[module]-[revision](-[classifier]).[ext]"
     }
 }
 
@@ -37,8 +37,8 @@ ext {
     massive = "1"
     major = "0"
     minor = "0"
-    mcVersion = "1.10.2"
-    forgeVersion = "12.18.1.2053"
+    mcVersion = "1.12.2"
+    forgeVersion = "14.23.1.2587"
 }
 
 group= "uk.kihira.immersivefloofs"
@@ -47,14 +47,14 @@ version = "${project.mcVersion}-${project.massive}.${project.major}.${project.mi
 
 dependencies {
     deployerJars "org.apache.maven.wagon:wagon-ssh:2.2"
-
-    deobfCompile "uk.kihira.tails:Tails:1.10.2-1.8.2"
+    deobfCompile name: "ImmersiveEngineering", version: "0.12-76"
+    deobfCompile name: "Tails", version: "1.12-1.10.0"
 }
 
 minecraft {
     version = "${project.mcVersion}-${project.forgeVersion}"
     runDir = "run"
-    mappings = "snapshot_20160518"
+    mappings = "snapshot_20180111"
 
     replace '@VERSION@', project.version
     replace '@MCVERSION@', project.mcVersion

@@ -88,7 +88,7 @@ public class ImmersiveFloofs {
                 @Override
                 public int getColour(ItemStack stack, int layer) {
                     if (layer == 1) {
-                        return Color.getHSBColor(((Minecraft.getMinecraft().theWorld.getTotalWorldTime() + Minecraft.getMinecraft().getRenderPartialTicks()) % 360f) / 360f, 1f, 1f).getRGB();
+                        return Color.getHSBColor(((Minecraft.getMinecraft().world.getTotalWorldTime() + Minecraft.getMinecraft().getRenderPartialTicks()) % 360f) / 360f, 1f, 1f).getRGB();
                     }
                     return 0xffffffff;
                 }
